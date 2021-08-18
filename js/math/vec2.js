@@ -1,5 +1,5 @@
 class Vector {
-    constructor(x, y) {
+    constructor(x=0, y=0) {
         this.x = x
         this.y = y
     }
@@ -51,6 +51,6 @@ class Vector {
     }
 }
 
-const vec2 = (x=0, y=0) => new Vector(x, y)
+const vec2 = (...props) => new Vector(...props)
 
 export default vec2

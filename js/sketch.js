@@ -12,7 +12,7 @@ const createContainer = () => {
     return container
 }
 
-const createCanvas = ({ width=2048, height=2048 }={ }) => {
+const createCanvas = ({ width=window.innerWidth, height=window.innerHeight, fullscreen=true }={ }) => {
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
 
@@ -20,12 +20,17 @@ const createCanvas = ({ width=2048, height=2048 }={ }) => {
 
     canvas.id = "sketch"
     Object.assign(canvas, { width, height })
-    Object.assign(canvas.style, {  
-        height: "80vmin",
-        width: `calc(${aspect} * 80vmin)`,
-        borderRadius: "0.5rem",
-        boxShadow: "0 0.5rem 2rem rgba(0, 0, 0, 0.2)"
-    })
+
+    if(fullscreen) {
+        Object.assign(canvas.style, { width: "100vw", height: "100vh" })
+    } else {
+        Object.assign(canvas.style, {  
+            height: "80vmin",
+            width: `calc(${aspect} * 80vmin)`,
+            borderRadius: "0.5rem",
+            boxShadow: "0 0.5rem 2rem rgba(0, 0, 0, 0.2)"
+        })
+    }
 
     return { canvas, ctx }
 }
@@ -48,16 +53,22 @@ export const create = (render) => {
     frame()
 }
 
+const render = (object, props) => {
+    typeof object.render == "function"
+        ? object.render(props)
+        : object(props)
+}
+
 export const renderer = (objects) => {
+
     return (props) => {
+
         for(const key in objects) {
-            if(Array.isArray(objects[key])) {
-                for(const _renderer of objects[key]) {
-                    _renderer({ ...props, objects })
-                }
-            } else {
-                objects[key]({ ...props, objects })
-            }
+            const _props = { ...props, objects }
+
+            Array.isArray(objects[key])
+                ? objects[key].forEach(object => render(object, _props))
+                : render(objects[key], _props)
         }
     }
 }

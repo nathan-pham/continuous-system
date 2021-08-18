@@ -1,53 +1,85 @@
+import SimplexNoise from "https://esm.sh/simplex-noise"
 import vec2 from "../math/vec2.js"
+
+const map = (n, start1, stop1, start2, stop2) => (
+    ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2
+)
 
 const range = (min, max) => (
     (Math.random() * (max - min)) + min
 )
 
+const dist = (v1, v2) => {
+    const dx = v1.x - v2.x
+    const dy = v1.y - v2.y
+    return Math.sqrt(dx * dx + dy * dy)
+}
+
+const simplex = new SimplexNoise(Math.random())
+
 const randomizeDNA = () => {
-    const size =  range(20, 200)
+    const size = Math.random()
     
     return {
-        size,
-        rate: Math.pow(size, 0.01),
-        speed: (1 / size) * range(200, 500),
-        energy: size + range(100, 1000),
+        size: size * 50 + 5,
+        color: Math.random() + 0.1,
+        rate: size,
+        speed: map(size, 0, 1, 10, 0),
+        energy: size + range(100, 500),
     }
 }
 
-const ant = (pos, DNA) => {
-    const vel = vec2()
-    const acc = vec2()
+class Ant {
+    constructor(pos, DNA) {
+        this.off = vec2(range(0, 1000), range(0, 1000))
+        this.DNA = DNA || randomizeDNA()
 
-    const { size, speed, rate, energy } = DNA || randomizeDNA()
+        this.pos = pos
+        this.progress = 0
 
-    let progress = 0
+        this.dprogress = 0
+    }
 
-    const color = () => `rgba(0, 0, 0, ${1 - (progress / energy)})`
+    get color() {
+        return `rgba(0, 0, 0, ${this.DNA.color - this.dprogress})`
+    }
 
-    return ({ ctx, canvas: { width, height }, objects: { plants } }) => {
-        acc.add(vec2(Math.random() * 2 - 1, Math.random() * 2 - 1))
-        
-        progress += rate
+    render({ ctx, canvas: { width, height }, objects: { plants } }) {
+        const { size, speed, rate, color, energy } = this.DNA
 
-        if (progress <= energy) {
-            vel.add(acc)
-            pos.add(vel)
-            acc.mult(0)
-    
-            vel.limit(speed)
-            
-            if(pos.x < -size) { pos.x = width + size }
-            if(pos.x > width + size) { pos.x = -size }
-            if(pos.y < -size) { pos.y = height + size }
-            if(pos.y > height + size) { pos.y = -size }
+        this.progress += rate
+
+        if(this.progress <= energy) {
+            const vel = vec2(
+                map(simplex.noise2D(this.off.x, 0), -1, 1, -speed, speed),
+                map(simplex.noise2D(0, this.off.y), -1, 1, -speed, speed)
+            )
+
+            this.pos.add(vel)
+            this.off.add(vec2(0.01, 0.01))
+
+            if(this.pos.x < -size) { this.pos.x = width + size }
+            if(this.pos.y < -size) { this.pos.y = height + size }
+            if(this.pos.x > width + size) { this.pos.x = -size }
+            if(this.pos.y > height + size) { this.pos.y = -size }
+
+            for(const plant of plants) {
+                if(dist(this.pos, plant.pos) < size + plant.size && !plant.dead) {
+                    this.progress -= 20
+                    plant.dead = true
+                }
+            }
+
+        } else {
+            this.dprogress += 0.01
         }
-
-        ctx.fillStyle = color()
+        
+        ctx.fillStyle = this.color
         ctx.beginPath()
-        ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2)
+        ctx.arc(this.pos.x, this.pos.y, size, 0, Math.PI * 2)
         ctx.fill()
     }
 }
 
+const ant = (...props) => new Ant(...props)
 export default ant

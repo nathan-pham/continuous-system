@@ -10,12 +10,12 @@ sketch.create(({ canvas: { width, height } }) => {
     const rpos = () => vec2(Math.random() * width, Math.random() * height)
 
     const plants = []
-    for(let i = 0; i < 100; i++) {
+    for(let i = 0; i < 15; i++) {
         plants.push(plant(rpos()))
     }
 
     const ants = []
-    for(let i = 0; i < 50; i++) {
+    for(let i = 0; i < 15; i++) {
         ants.push(ant(rpos()))
     }
 
