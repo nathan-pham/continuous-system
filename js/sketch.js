@@ -50,8 +50,14 @@ export const create = (render) => {
 
 export const renderer = (objects) => {
     return (props) => {
-        for(const _renderer of objects) {
-            _renderer(props)
+        for(const key in objects) {
+            if(Array.isArray(objects[key])) {
+                for(const _renderer of objects[key]) {
+                    _renderer({ ...props, objects })
+                }
+            } else {
+                objects[key]({ ...props, objects })
+            }
         }
     }
 }

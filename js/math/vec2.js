@@ -1,43 +1,56 @@
-const vec2 = (x=0, y=0) => {
-    const add = (vec) => {
-        x += vec.x
-        y += vec.y
+class Vector {
+    constructor(x, y) {
+        this.x = x
+        this.y = y
     }
 
-    const sub = (vec) => {
-        x -= vec.x
-        y -= vec.y
-    }
-    
-    const div = (n) => {
-        x /= n
-        y /= n
+    add(v) {
+        this.x += v.x
+        this.y += v.y
     }
 
-    const mult = (n) => {
-        x *= n
-        y *= n
+    sub(v) {
+        this.x -= v.x
+        this.y -= v.y
     }
 
-    const mag = () => {
-        return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+    div(n) {
+        this.x /= n
+        this.y /= n
     }
 
-    const normalize = () => {
-        const m = mag()
-        if(m !== 0) {
-            div(m)
+    mult(n) {
+        this.x *= n
+        this.y *= n
+    }
+
+    mag() {
+        return Math.sqrt(this.x * this.x + this.y * this.y)
+    }
+
+    normalize() {
+        let m = this.mag()
+        if (m != 0) {
+            this.div(m)
         }
     }
 
-    const reset = (n) => {
-        normalize()
-        mult(n)
+    limit(n) {
+        if(this.mag() > n) {
+            this.reset(n)
+        }
     }
 
-    const clone = () => ({...vec2(x, y)})
+    reset(n) {
+        this.normalize()
+        this.mult(n)
+    }
 
-    return { x, y, add, sub, div, mult, mag, reset, clone, normalize }
+    clone() {
+        return new Vector(this.x, this.y)
+    }
 }
+
+const vec2 = (x=0, y=0) => new Vector(x, y)
 
 export default vec2
