@@ -47,3 +47,11 @@ export const create = (render) => {
 
     frame()
 }
+
+export const renderer = (objects) => {
+    return (props) => {
+        for(const _renderer of objects) {
+            _renderer(props)
+        }
+    }
+}
