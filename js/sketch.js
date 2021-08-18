@@ -12,34 +12,38 @@ const createContainer = () => {
     return container
 }
 
-const createCanvas = ({ width=500, height=500 }) => {
+const createCanvas = ({ width=2048, height=2048 }={ }) => {
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
+
+    const aspect = width / height
 
     canvas.id = "sketch"
     Object.assign(canvas, { width, height })
     Object.assign(canvas.style, {  
-        width: width + "px",
-        height: height + "px",
+        height: "80vmin",
+        width: `calc(${aspect} * 80vmin)`,
         borderRadius: "0.5rem",
-        boxShadow: "0 0.5rem 1rem gray"
+        boxShadow: "0 0.5rem 2rem rgba(0, 0, 0, 0.2)"
     })
 
     return { canvas, ctx }
 }
 
-const sketch = (render) => {
+export const create = (render) => {
     const container = createContainer()
     const { canvas, ctx } = createCanvas()
  
+    document.body.appendChild(container)
     container.appendChild(canvas)
 
+    const props = { canvas, ctx }
+    const renderer = render(props)
+
     const frame = () => {
-        render({ canvas, ctx })
+        renderer(props)
         window.requestAnimationFrame(frame)
     }
 
     frame()
 }
-
-export default sketch
