@@ -23,6 +23,13 @@ sketch.create(({ canvas: { width, height } }) => {
         object.ants = ants
     }
 
+    // setInterval(() => {
+    //     if(ants.length) {
+    //         plants.push(plant(rpos()))
+    //         console.log("new plant")
+    //     }
+    // }, 500) 
+
     return sketch.renderer({
         background: background({ color: "#fff" }),
         plants,

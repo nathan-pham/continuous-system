@@ -12,7 +12,7 @@ const createContainer = () => {
     return container
 }
 
-const createCanvas = ({ width=window.innerWidth, height=window.innerHeight, fullscreen=true }={ }) => {
+const createCanvas = ({ width=window.innerWidth, height=window.innerHeight, fullscreen=false }={ }) => {
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
 
