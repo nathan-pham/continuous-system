@@ -18,15 +18,17 @@ const dist = (v1, v2) => {
 const simplex = new SimplexNoise(Math.random())
 
 const randomizeDNA = () => {
-    const size = Math.random()
-    const speed = map(size, 0, 1, 15, 0)
-    
+    const rsize = Math.random()
+    const speed = map(rsize, 0, 1, 15, 0)
+
+    const size = rsize * 50 + 5 
+
     return {
-        speed,
-        size: size * 50 + 5,
+        speed, 
+        size,
         color: Math.random() + 0.1,
-        rate: ((speed / 10) + size) / 2,
-        energy: size + range(100, 500),
+        rate : ((speed / 7) + rsize) / 2,
+        energy: size + range(100, 500)
     }
 }
 
@@ -35,7 +37,7 @@ const avg = (...args) => args.reduce((a, b) => a + b, 0) / args.length
 const combineDNA  = (DNA1, DNA2) => (
     Object.keys(DNA1).reduce((acc, key) => ({
         ...acc,
-        [key]: Math.random() > 0.5 ? DNA2[key] : DNA1[key]
+        [key]: (Math.random() > 0.5 ? DNA2[key] : DNA1[key]) + (randomizeDNA()[key] / 10)
     }), {})
 )
 
@@ -88,7 +90,7 @@ class Ant {
 
             for(const plant of plants) {
                 if(dist(this.pos, plant.pos) < size + plant.size && !plant.dead) {
-                    this.progress -= 20
+                    this.progress -= 75
                     plant.dead = true
                 }
             }
@@ -103,10 +105,10 @@ class Ant {
                     this.progress < energy / 2 && 
                     object.progress < object.DNA.energy / 2
                 ) {
-                    console.log("r")
+                    console.log("reproduce")
 
-                    object.progress += 40
-                    this.progress += 40
+                    object.progress += 200
+                    this.progress += 200
 
                     this.ants.push(ant(
                         vec2((this.pos.x + object.pos.x) / 2, (this.pos.y + object.pos.y) / 2), 
@@ -116,6 +118,11 @@ class Ant {
             }
         } else {
             this.dprogress += 0.01
+
+            if(!this.dead) {
+                console.log("dead")
+            }
+            this.dead = true
         }
         
         ctx.fillStyle = this.color
