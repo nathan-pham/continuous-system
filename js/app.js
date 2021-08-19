@@ -15,8 +15,12 @@ sketch.create(({ canvas: { width, height } }) => {
     }
 
     const ants = []
-    for(let i = 0; i < 15; i++) {
+    for(let i = 0; i < 30; i++) {
         ants.push(ant(rpos()))
+    }
+
+    for(const object of ants) {
+        object.ants = ants
     }
 
     return sketch.renderer({

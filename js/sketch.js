@@ -60,12 +60,9 @@ const render = (object, props) => {
 }
 
 export const renderer = (objects) => {
-
     return (props) => {
-
         for(const key in objects) {
             const _props = { ...props, objects }
-
             Array.isArray(objects[key])
                 ? objects[key].forEach(object => render(object, _props))
                 : render(objects[key], _props)
