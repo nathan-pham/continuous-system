@@ -27,8 +27,8 @@ const randomizeDNA = () => {
         speed, 
         size,
         color: Math.random() + 0.1,
-        rate : ((speed / 7) + rsize) / 2,
-        energy: size + range(100, 500)
+        rate : (speed / 7) + rsize,
+        energy: size + range(100, 400)
     }
 }
 
