@@ -27,8 +27,8 @@ const randomizeDNA = () => {
         speed, 
         size,
         color: Math.random() + 0.1,
-        rate : (speed / 7) + rsize,
-        energy: size + range(100, 400)
+        rate: ((speed / 7) + rsize) / 1.5,
+        energy: size + range(150, 400)
     }
 }
 
@@ -100,15 +100,15 @@ class Ant {
             for(const object of (this.ants || [])) {
                 if(
                     object !== this && 
-                    Math.random() < 0.005 && 
+                    Math.random() < 0.002 && 
                     dist(this.pos, object.pos) < (size + object.DNA.size) && 
-                    this.progress < energy / 2 && 
-                    object.progress < object.DNA.energy / 2
+                    this.progress < 100 && 
+                    object.progress < 100
                 ) {
                     console.log("reproduce")
 
-                    object.progress += 200
-                    this.progress += 200
+                    object.progress += 100
+                    this.progress += 100
 
                     this.ants.push(ant(
                         vec2((this.pos.x + object.pos.x) / 2, (this.pos.y + object.pos.y) / 2), 
